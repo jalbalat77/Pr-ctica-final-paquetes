@@ -1,0 +1,46 @@
+# Pr-ctica-final-paquetes
+
+CREATE OR REPLACE PROCEDURE insertnotes (P_CREDITO IN QUALIFICACIO.CODI_CREDIT%TYPE)
+IS
+v_media NUMBER := 0;
+v_suma NUMBER := 0;
+v_stotal NUMBER := 0;
+v_credito QUALIFICACIO.CODI_CREDIT%TYPE;
+v_notamedia NUMBER := 0;
+
+CURSOR C_CREDITO IS
+SELECT NOTA
+FROM QUALIFICACIO
+WHERE CODI_CREDIT = P_CREDITO;
+
+
+
+BEGIN
+  
+  v_credito := p_credito;
+  
+  OPEN C_CREDITO;
+ 
+    LOOP
+    FETCH C_CREDITO INTO v_suma;
+    EXIT WHEN C_CREDITO%NOTFOUND;
+    v_stotal := v_stotal + v_suma;
+    
+    
+    
+    SELECT COUNT(CODI_CREDIT) INTO v_media FROM QUALIFICACIO WHERE CODI_CREDIT = P_CREDITO;
+    v_notamedia := v_stotal / v_media;
+     DBMS_OUTPUT.PUT_LINE('-----------------------------------------------------------------------------------');
+    DBMS_OUTPUT.PUT_LINE('sumatotal: '|| v_stotal ||' vmedia: '|| v_media || ' vnotamedia: '|| v_notamedia);
+    DBMS_OUTPUT.PUT_LINE('-----------------------------------------------------------------------------------');
+    INSERT INTO NOTAS (credito, media, fecha)
+    VALUES (v_credito, v_notamedia, '23/06/14');
+  
+    v_notamedia := 0;
+    v_stotal := 0;
+    v_media := 0;
+    END LOOP;
+    CLOSE C_CREDITO;
+  
+
+END insertnotes;
